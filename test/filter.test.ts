@@ -142,6 +142,28 @@ describe("filter", () => {
       };
     expect(filterRowss([col1,col2], fv)).toStrictEqual([col1,col2]);
   });
+  test("should expect [col1] when filter1By= is equal to and filter2by= Does not contain and compareValue is And", () => {
+    let fv: FilterFormValues = {
+      filter1By: "Is equal to",
+      filter1Value: "red",
+      filter2By: "Does not contain",
+      filter2Value: "b",
+      compareValue: "And",
+    column:'id'
+      };
+    expect(filterRowss([col1,col2], fv)).toStrictEqual([col1]);
+  });
+  test("should expect [col1,col2] when filter1By= is equal to and filter2by= Does not contains and compareValue is Or", () => {
+    let fv: FilterFormValues = {
+      filter1By: "Is equal to",
+      filter1Value: "red",
+      filter2By: "Does not contain",
+      filter2Value: "r",
+      compareValue: "Or",
+    column:'id'
+      };
+    expect(filterRowss([col1,col2], fv)).toStrictEqual([col1,col2]);
+  });
 });
 
 

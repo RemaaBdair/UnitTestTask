@@ -758,6 +758,17 @@ describe("filter", () => {
       };
     expect(filterRowss([col1,col2], fv)).toStrictEqual([col1,col2]);
   });
+  test("should expect [] when filter1By= Does not contain and filter2by= Does not contain and compareValue is And", () => {
+    let fv: FilterFormValues = {
+      filter1By: "Does not contain",
+      filter1Value: "l",
+      filter2By: "Does not contain",
+      filter2Value: "e",
+      compareValue: "And",
+    column:'id'
+      };
+    expect(filterRowss([col1,col2], fv)).toStrictEqual([]);
+  });
 });
 
 

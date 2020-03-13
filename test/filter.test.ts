@@ -373,6 +373,17 @@ describe("filter", () => {
       };
     expect(filterRowss([col1, col2], fv)).toStrictEqual([col1]);
   });/** */
+  test("should expect [col1] when filter1By= Starts with and filter2by= is equal to and compareValue is Or with no filter2Value", () => {
+    let fv: FilterFormValues = {
+      filter1By: "Starts with",
+      filter1Value: "r",
+      filter2By: "Is equal to",
+      filter2Value: undefined,
+      compareValue: "Or",
+    column:'id'
+      };
+    expect(filterRowss([col1, col2], fv)).toStrictEqual([col1]);
+  });/**+1 */
 });
 
 

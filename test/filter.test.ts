@@ -626,6 +626,17 @@ describe("filter", () => {
       };
     expect(filterRowss([col1,col2], fv)).toStrictEqual([col1,col2]);
   });
+  test("should expect [col2] when filter1By= Containso and filter2by= Ends with and compareValue is And", () => {
+    let fv: FilterFormValues = {
+      filter1By: "Contains",
+      filter1Value: "b",
+      filter2By: "Ends with",
+      filter2Value: "e",
+      compareValue: "And",
+    column:'id'
+      };
+    expect(filterRowss([col1,col2], fv)).toStrictEqual([col2]);
+  });
 });
 
 

@@ -34,8 +34,8 @@ const filterRows = (
   if (!filterValues.filter1Value) {
     return rowsToFilter;
   }
-  const b2 = (x:string, row:Column,op:string):boolean => {
-    let b = {
+  const operand2 = (filterBy:string, row:Column,op:string):boolean => {
+    let values = {
       "Is equal to": function(row) {
         return filterValues.filter2Value
           ? row[column].toLowerCase() ===
@@ -77,11 +77,11 @@ const filterRows = (
           : op==="And"?true :false;
       }
     };
-    return b[x](row);
+    return values[filterBy](row);
   };
 
-  const b1 = (x:string, row:Column):boolean => {
-    let b = {
+  const  operand1= (filterBy:string, row:Column):boolean => {
+    let values = {
       "Is equal to": function(row) {
         return (
           row[column].toLowerCase() === filterValues.filter1Value.toLowerCase()
@@ -113,14 +113,14 @@ const filterRows = (
           .endsWith(filterValues.filter1Value.toLowerCase());
       }
     };
-    return b[x](row);
+    return values[filterBy](row);
   };
 
   return rowsToFilter.filter(row =>
      op(
-      b1(filterValues.filter1By, row),
+      operand1(filterValues.filter1By, row),
       filterValues.compareValue,
-      b2(filterValues.filter2By, row,filterValues.compareValue)
+      operand2(filterValues.filter2By, row,filterValues.compareValue)
     )
   );
 };

@@ -109,7 +109,7 @@ describe("filter", () => {
       };
     expect(filterRowss([col1,col2], fv)).toStrictEqual([col1]);
   });
-  test("should expect [col1] when filter1By= is equal to and filter2by= Starts with and compareValue is Or", () => {
+  test("should expect [col1,col2] when filter1By= is equal to and filter2by= Starts with and compareValue is Or", () => {
     let fv: FilterFormValues = {
       filter1By: "Is equal to",
       filter1Value: "red",

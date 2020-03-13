@@ -934,6 +934,17 @@ describe("filter", () => {
       };
     expect(filterRowss([col1,col2], fv)).toStrictEqual([col1,col2]);
   });
+  test("should expect [] when filter1By= Ends witho and filter2by= Ends with and compareValue is And", () => {
+    let fv: FilterFormValues = {
+      filter1By: "Ends with",
+      filter1Value: "e",
+      filter2By: "Ends with",
+      filter2Value: "d",
+      compareValue: "And",
+    column:'id'
+      };
+    expect(filterRowss([col1,col2], fv)).toStrictEqual([]);
+  });
 });
 
 

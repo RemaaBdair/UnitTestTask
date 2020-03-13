@@ -318,6 +318,17 @@ describe("filter", () => {
       };
     expect(filterRowss([col1,col2], fv)).toStrictEqual([col1,col2]);
   });
+  test("should expect [col2] when filter1By= Is not equal too and filter2by= Ends with and compareValue is And", () => {
+    let fv: FilterFormValues = {
+      filter1By: "Is not equal to",
+      filter1Value: "red",
+      filter2By: "Ends with",
+      filter2Value: "e",
+      compareValue: "And",
+    column:'id'
+      };
+    expect(filterRowss([col1,col2], fv)).toStrictEqual([col2]);
+  });
 });
 
 

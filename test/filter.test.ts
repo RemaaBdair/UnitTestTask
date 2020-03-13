@@ -571,6 +571,17 @@ describe("filter", () => {
       };
     expect(filterRowss([col1,col2], fv)).toStrictEqual([]);
   });
+  test("should expect [col1,col2] when filter1By= Contains and filter2by= Starts with and compareValue is Or", () => {
+    let fv: FilterFormValues = {
+      filter1By: "Contains",
+      filter1Value: "r",
+      filter2By: "Starts with",
+      filter2Value: "b",
+      compareValue: "Or",
+    column:'id'
+      };
+    expect(filterRowss([col1,col2], fv)).toStrictEqual([col1,col2]);
+  });
 });
 
 

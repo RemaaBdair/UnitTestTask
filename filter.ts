@@ -7,7 +7,11 @@ type FilterOptions =
   | "Ends with";
 
 type CompareOptions = "And" | "Or";
-
+interface Column {
+  id: string;
+  category: string;
+  name: string
+}
 type FilterFormValues = {
   filter1By: FilterOptions;
   filter1Value: string;
@@ -17,909 +21,108 @@ type FilterFormValues = {
   column?: keyof Column;
 };
 
-interface Column {
-  id: string;
-  category: string;
-  name: string;
+function op(b1:boolean, operator, b2:boolean) :boolean{
+  return operator === "And" ? b1 && b2 : b1 || b2;
 }
-
-const filterRows = (rows: Column[], filterValues: FilterFormValues): Column[] => {
+const filterRows = (
+  rows: Column[],
+  filterValues: FilterFormValues
+): Column[] => {
   let rowsToFilter = rows;
-  const column: keyof Column = filterValues.column;
+  let column: keyof Column = filterValues.column;
 
   if (!filterValues.filter1Value) {
     return rowsToFilter;
   }
+  const b2 = (x:string, row:Column,op:string):boolean => {
+    let b = {
+      "Is equal to": function(row) {
+        return filterValues.filter2Value
+          ? row[column].toLowerCase() ===
+              filterValues.filter2Value.toLowerCase()
+          : (op==="And"?true :false);
+      },
+      "Is not equal to": function(row) {
+        return filterValues.filter2Value
+          ? row[column].toLowerCase() !==
+              filterValues.filter2Value.toLowerCase()
+          : op==="And"?true :false;
+      },
+      "Starts with": function(row) {
+        return filterValues.filter2Value
+          ? row[column]
+              .toLowerCase()
+              .startsWith(filterValues.filter2Value.toLowerCase())
+          : op==="And"?true :false;
+      },
+      'Contains': function(row) {
+        return filterValues.filter2Value
+          ? row[column]
+              .toLowerCase()
+              .includes(filterValues.filter2Value.toLowerCase())
+          : op==="And"?true :false;
+      },
+      "Does not contain": function(row) {
+        return filterValues.filter2Value
+          ? !row[column]
+              .toLowerCase()
+              .includes(filterValues.filter2Value.toLowerCase())
+          : op==="And"?true :false;
+      },
+      "Ends with": function(row) {
+        return filterValues.filter2Value
+          ? row[column]
+              .toLowerCase()
+              .endsWith(filterValues.filter2Value.toLowerCase())
+          : op==="And"?true :false;
+      }
+    };
+    return b[x](row);
+  };
 
-  switch (filterValues.filter1By) {
-    case "Is equal to":
-      if (filterValues.filter2By === "Is equal to") {
-        if (filterValues.compareValue === "And") {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column].toLowerCase() === filterValues.filter1Value.toLowerCase() &&
-              (filterValues.filter2Value
-                ? row[column].toLowerCase() ===
-                  filterValues.filter2Value.toLowerCase()
-                : true)
-          );
-        } else {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column].toLowerCase() === filterValues.filter1Value.toLowerCase() ||
-              (filterValues.filter2Value
-                ? row[column].toLowerCase() ===
-                  filterValues.filter2Value.toLowerCase()
-                : false)
-          );
-        }
-      } else if (filterValues.filter2By === "Is not equal to") {
-        if (filterValues.compareValue === "And") {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column].toLowerCase() === filterValues.filter1Value.toLowerCase() &&
-              (filterValues.filter2Value
-                ? row[column].toLowerCase() !==
-                  filterValues.filter2Value.toLowerCase()
-                : true)
-          );
-        } else {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column].toLowerCase() === filterValues.filter1Value.toLowerCase() ||
-              (filterValues.filter2Value
-                ? row[column].toLowerCase() !==
-                  filterValues.filter2Value.toLowerCase()
-                : false)
-          );
-        }
-      } else if (filterValues.filter2By === "Starts with") {
-        if (filterValues.compareValue === "And") {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column].toLowerCase() === filterValues.filter1Value.toLowerCase() &&
-              (filterValues.filter2Value
-                ? row[column]
-                    .toLowerCase()
-                    .startsWith(filterValues.filter2Value.toLowerCase())
-                : true)
-          );
-        } else {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column].toLowerCase() === filterValues.filter1Value.toLowerCase() ||
-              (filterValues.filter2Value
-                ? row[column]
-                    .toLowerCase()
-                    .startsWith(filterValues.filter2Value.toLowerCase())
-                : false)
-          );
-        }
-      } else if (filterValues.filter2By === "Contains") {
-        if (filterValues.compareValue === "And") {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column].toLowerCase() === filterValues.filter1Value.toLowerCase() &&
-              (filterValues.filter2Value
-                ? row[column]
-                    .toLowerCase()
-                    .includes(filterValues.filter2Value.toLowerCase())
-                : true)
-          );
-        } else {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column].toLowerCase() === filterValues.filter1Value.toLowerCase() ||
-              (filterValues.filter2Value
-                ? row[column]
-                    .toLowerCase()
-                    .includes(filterValues.filter2Value.toLowerCase())
-                : false)
-          );
-        }
-      } else if (filterValues.filter2By === "Does not contain") {
-        if (filterValues.compareValue === "And") {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column].toLowerCase() === filterValues.filter1Value.toLowerCase() &&
-              (filterValues.filter2Value
-                ? !row[column]
-                    .toLowerCase()
-                    .includes(filterValues.filter2Value.toLowerCase())
-                : true)
-          );
-        } else {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column].toLowerCase() === filterValues.filter1Value.toLowerCase() ||
-              (filterValues.filter2Value
-                ? !row[column]
-                    .toLowerCase()
-                    .includes(filterValues.filter2Value.toLowerCase())
-                : false)
-          );
-        }
-      } else if (filterValues.filter2By === "Ends with") {
-        if (filterValues.compareValue === "And") {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column].toLowerCase() === filterValues.filter1Value.toLowerCase() &&
-              (filterValues.filter2Value
-                ? row[column]
-                    .toLowerCase()
-                    .endsWith(filterValues.filter2Value.toLowerCase())
-                : true)
-          );
-        } else {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column].toLowerCase() === filterValues.filter1Value.toLowerCase() ||
-              (filterValues.filter2Value
-                ? row[column]
-                    .toLowerCase()
-                    .endsWith(filterValues.filter2Value.toLowerCase())
-                : false)
-          );
-        }
+  const b1 = (x:string, row:Column):boolean => {
+    let b = {
+      "Is equal to": function(row) {
+        return (
+          row[column].toLowerCase() === filterValues.filter1Value.toLowerCase()
+        );
+      },
+      "Is not equal to": function(row) {
+        return (
+          row[column].toLowerCase() !== filterValues.filter1Value.toLowerCase()
+        );
+      },
+      "Starts with": function(row) {
+        return row[column]
+          .toLowerCase()
+          .startsWith(filterValues.filter1Value.toLowerCase());
+      },
+      'Contains': function(row) {
+        return row[column]
+          .toLowerCase()
+          .includes(filterValues.filter1Value.toLowerCase());
+      },
+      "Does not contain": function(row) {
+        return !row[column]
+          .toLowerCase()
+          .includes(filterValues.filter1Value.toLowerCase());
+      },
+      "Ends with": function(row) {
+        return row[column]
+          .toLowerCase()
+          .endsWith(filterValues.filter1Value.toLowerCase());
       }
-      break;
-    case "Is not equal to":
-      if (filterValues.filter2By === "Is equal to") {
-        if (filterValues.compareValue === "And") {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column].toLowerCase() !== filterValues.filter1Value.toLowerCase() &&
-              (filterValues.filter2Value
-                ? row[column].toLowerCase() ===
-                  filterValues.filter2Value.toLowerCase()
-                : true)
-          );
-        } else {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column].toLowerCase() !== filterValues.filter1Value.toLowerCase() ||
-              (filterValues.filter2Value
-                ? row[column].toLowerCase() ===
-                  filterValues.filter2Value.toLowerCase()
-                : false)
-          );
-        }
-      } else if (filterValues.filter2By === "Is not equal to") {
-        if (filterValues.compareValue === "And") {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column].toLowerCase() !== filterValues.filter1Value.toLowerCase() &&
-              (filterValues.filter2Value
-                ? row[column].toLowerCase() !==
-                  filterValues.filter2Value.toLowerCase()
-                : true)
-          );
-        } else {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column].toLowerCase() !== filterValues.filter1Value.toLowerCase() ||
-              (filterValues.filter2Value
-                ? row[column].toLowerCase() !==
-                  filterValues.filter2Value.toLowerCase()
-                : false)
-          );
-        }
-      } else if (filterValues.filter2By === "Starts with") {
-        if (filterValues.compareValue === "And") {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column].toLowerCase() !== filterValues.filter1Value.toLowerCase() &&
-              (filterValues.filter2Value
-                ? row[column]
-                    .toLowerCase()
-                    .startsWith(filterValues.filter2Value.toLowerCase())
-                : true)
-          );
-        } else {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column].toLowerCase() !== filterValues.filter1Value.toLowerCase() ||
-              (filterValues.filter2Value
-                ? row[column]
-                    .toLowerCase()
-                    .startsWith(filterValues.filter2Value.toLowerCase())
-                : false)
-          );
-        }
-      } else if (filterValues.filter2By === "Contains") {
-        if (filterValues.compareValue === "And") {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column].toLowerCase() !== filterValues.filter1Value.toLowerCase() &&
-              (filterValues.filter2Value
-                ? row[column]
-                    .toLowerCase()
-                    .includes(filterValues.filter2Value.toLowerCase())
-                : true)
-          );
-        } else {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column].toLowerCase() !== filterValues.filter1Value.toLowerCase() ||
-              (filterValues.filter2Value
-                ? row[column]
-                    .toLowerCase()
-                    .includes(filterValues.filter2Value.toLowerCase())
-                : false)
-          );
-        }
-      } else if (filterValues.filter2By === "Does not contain") {
-        if (filterValues.compareValue === "And") {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column].toLowerCase() !== filterValues.filter1Value.toLowerCase() &&
-              (filterValues.filter2Value
-                ? !row[column]
-                    .toLowerCase()
-                    .includes(filterValues.filter2Value.toLowerCase())
-                : true)
-          );
-        } else {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column].toLowerCase() !== filterValues.filter1Value.toLowerCase() ||
-              (filterValues.filter2Value
-                ? !row[column]
-                    .toLowerCase()
-                    .includes(filterValues.filter2Value.toLowerCase())
-                : false)
-          );
-        }
-      } else if (filterValues.filter2By === "Ends with") {
-        if (filterValues.compareValue === "And") {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column].toLowerCase() !== filterValues.filter1Value.toLowerCase() &&
-              (filterValues.filter2Value
-                ? row[column]
-                    .toLowerCase()
-                    .endsWith(filterValues.filter2Value.toLowerCase())
-                : true)
-          );
-        } else {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column].toLowerCase() !== filterValues.filter1Value.toLowerCase() ||
-              (filterValues.filter2Value
-                ? row[column]
-                    .toLowerCase()
-                    .endsWith(filterValues.filter2Value.toLowerCase())
-                : false)
-          );
-        }
-      }
-      break;
-    case "Starts with":
-      if (filterValues.filter2By === "Is equal to") {
-        if (filterValues.compareValue === "And") {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column]
-                .toLowerCase()
-                .startsWith(filterValues.filter1Value.toLowerCase()) &&
-              (filterValues.filter2Value
-                ? row[column].toLowerCase() ===
-                  filterValues.filter2Value.toLowerCase()
-                : true)
-          );
-        } else {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column]
-                .toLowerCase()
-                .startsWith(filterValues.filter1Value.toLowerCase()) ||
-              (filterValues.filter2Value
-                ? row[column].toLowerCase() ===
-                  filterValues.filter2Value.toLowerCase()
-                : false)
-          );
-        }
-      } else if (filterValues.filter2By === "Is not equal to") {
-        if (filterValues.compareValue === "And") {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column]
-                .toLowerCase()
-                .startsWith(filterValues.filter1Value.toLowerCase()) &&
-              (filterValues.filter2Value
-                ? row[column].toLowerCase() !==
-                  filterValues.filter2Value.toLowerCase()
-                : true)
-          );
-        } else {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column]
-                .toLowerCase()
-                .startsWith(filterValues.filter1Value.toLowerCase()) ||
-              (filterValues.filter2Value
-                ? row[column].toLowerCase() !==
-                  filterValues.filter2Value.toLowerCase()
-                : false)
-          );
-        }
-      } else if (filterValues.filter2By === "Starts with") {
-        if (filterValues.compareValue === "And") {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column]
-                .toLowerCase()
-                .startsWith(filterValues.filter1Value.toLowerCase()) &&
-              (filterValues.filter2Value
-                ? row[column]
-                    .toLowerCase()
-                    .startsWith(filterValues.filter2Value.toLowerCase())
-                : true)
-          );
-        } else {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column]
-                .toLowerCase()
-                .startsWith(filterValues.filter1Value.toLowerCase()) ||
-              (filterValues.filter2Value
-                ? row[column]
-                    .toLowerCase()
-                    .startsWith(filterValues.filter2Value.toLowerCase())
-                : false)
-          );
-        }
-      } else if (filterValues.filter2By === "Contains") {
-        if (filterValues.compareValue === "And") {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column]
-                .toLowerCase()
-                .startsWith(filterValues.filter1Value.toLowerCase()) &&
-              (filterValues.filter2Value
-                ? row[column]
-                    .toLowerCase()
-                    .includes(filterValues.filter2Value.toLowerCase())
-                : true)
-          );
-        } else {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column]
-                .toLowerCase()
-                .startsWith(filterValues.filter1Value.toLowerCase()) ||
-              (filterValues.filter2Value
-                ? row[column]
-                    .toLowerCase()
-                    .includes(filterValues.filter2Value.toLowerCase())
-                : false)
-          );
-        }
-      } else if (filterValues.filter2By === "Does not contain") {
-        if (filterValues.compareValue === "And") {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column]
-                .toLowerCase()
-                .startsWith(filterValues.filter1Value.toLowerCase()) &&
-              (filterValues.filter2Value
-                ? !row[column]
-                    .toLowerCase()
-                    .includes(filterValues.filter2Value.toLowerCase())
-                : true)
-          );
-        } else {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column]
-                .toLowerCase()
-                .startsWith(filterValues.filter1Value.toLowerCase()) ||
-              (filterValues.filter2Value
-                ? !row[column]
-                    .toLowerCase()
-                    .includes(filterValues.filter2Value.toLowerCase())
-                : false)
-          );
-        }
-      } else if (filterValues.filter2By === "Ends with") {
-        if (filterValues.compareValue === "And") {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column]
-                .toLowerCase()
-                .startsWith(filterValues.filter1Value.toLowerCase()) &&
-              (filterValues.filter2Value
-                ? row[column]
-                    .toLowerCase()
-                    .endsWith(filterValues.filter2Value.toLowerCase())
-                : true)
-          );
-        } else {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column]
-                .toLowerCase()
-                .startsWith(filterValues.filter1Value.toLowerCase()) ||
-              (filterValues.filter2Value
-                ? row[column]
-                    .toLowerCase()
-                    .endsWith(filterValues.filter2Value.toLowerCase())
-                : false)
-          );
-        }
-      }
-      break;
-    case "Contains":
-      if (filterValues.filter2By === "Is equal to") {
-        if (filterValues.compareValue === "And") {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column]
-                .toLowerCase()
-                .includes(filterValues.filter1Value.toLowerCase()) &&
-              (filterValues.filter2Value
-                ? row[column].toLowerCase() ===
-                  filterValues.filter2Value.toLowerCase()
-                : true)
-          );
-        } else {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column]
-                .toLowerCase()
-                .includes(filterValues.filter1Value.toLowerCase()) ||
-              (filterValues.filter2Value
-                ? row[column].toLowerCase() ===
-                  filterValues.filter2Value.toLowerCase()
-                : false)
-          );
-        }
-      } else if (filterValues.filter2By === "Is not equal to") {
-        if (filterValues.compareValue === "And") {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column]
-                .toLowerCase()
-                .includes(filterValues.filter1Value.toLowerCase()) &&
-              (filterValues.filter2Value
-                ? row[column].toLowerCase() !==
-                  filterValues.filter2Value.toLowerCase()
-                : true)
-          );
-        } else {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column]
-                .toLowerCase()
-                .includes(filterValues.filter1Value.toLowerCase()) ||
-              (filterValues.filter2Value
-                ? row[column].toLowerCase() !==
-                  filterValues.filter2Value.toLowerCase()
-                : false)
-          );
-        }
-      } else if (filterValues.filter2By === "Starts with") {
-        if (filterValues.compareValue === "And") {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column]
-                .toLowerCase()
-                .includes(filterValues.filter1Value.toLowerCase()) &&
-              (filterValues.filter2Value
-                ? row[column]
-                    .toLowerCase()
-                    .startsWith(filterValues.filter2Value.toLowerCase())
-                : true)
-          );
-        } else {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column]
-                .toLowerCase()
-                .includes(filterValues.filter1Value.toLowerCase()) ||
-              (filterValues.filter2Value
-                ? row[column]
-                    .toLowerCase()
-                    .startsWith(filterValues.filter2Value.toLowerCase())
-                : false)
-          );
-        }
-      } else if (filterValues.filter2By === "Contains") {
-        if (filterValues.compareValue === "And") {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column]
-                .toLowerCase()
-                .includes(filterValues.filter1Value.toLowerCase()) &&
-              (filterValues.filter2Value
-                ? row[column]
-                    .toLowerCase()
-                    .includes(filterValues.filter2Value.toLowerCase())
-                : true)
-          );
-        } else {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column]
-                .toLowerCase()
-                .includes(filterValues.filter1Value.toLowerCase()) ||
-              (filterValues.filter2Value
-                ? row[column]
-                    .toLowerCase()
-                    .includes(filterValues.filter2Value.toLowerCase())
-                : false)
-          );
-        }
-      } else if (filterValues.filter2By === "Does not contain") {
-        if (filterValues.compareValue === "And") {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column]
-                .toLowerCase()
-                .includes(filterValues.filter1Value.toLowerCase()) &&
-              (filterValues.filter2Value
-                ? !row[column]
-                    .toLowerCase()
-                    .includes(filterValues.filter2Value.toLowerCase())
-                : true)
-          );
-        } else {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column]
-                .toLowerCase()
-                .includes(filterValues.filter1Value.toLowerCase()) ||
-              (filterValues.filter2Value
-                ? !row[column]
-                    .toLowerCase()
-                    .includes(filterValues.filter2Value.toLowerCase())
-                : false)
-          );
-        }
-      } else if (filterValues.filter2By === "Ends with") {
-        if (filterValues.compareValue === "And") {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column]
-                .toLowerCase()
-                .includes(filterValues.filter1Value.toLowerCase()) &&
-              (filterValues.filter2Value
-                ? row[column]
-                    .toLowerCase()
-                    .endsWith(filterValues.filter2Value.toLowerCase())
-                : true)
-          );
-        } else {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column]
-                .toLowerCase()
-                .includes(filterValues.filter1Value.toLowerCase()) ||
-              (filterValues.filter2Value
-                ? row[column]
-                    .toLowerCase()
-                    .endsWith(filterValues.filter2Value.toLowerCase())
-                : false)
-          );
-        }
-      }
-      break;
-    case "Does not contain":
-      if (filterValues.filter2By === "Is equal to") {
-        if (filterValues.compareValue === "And") {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              !row[column]
-                .toLowerCase()
-                .includes(filterValues.filter1Value.toLowerCase()) &&
-              (filterValues.filter2Value
-                ? row[column].toLowerCase() ===
-                  filterValues.filter2Value.toLowerCase()
-                : true)
-          );
-        } else {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              !row[column]
-                .toLowerCase()
-                .includes(filterValues.filter1Value.toLowerCase()) ||
-              (filterValues.filter2Value
-                ? row[column].toLowerCase() ===
-                  filterValues.filter2Value.toLowerCase()
-                : false)
-          );
-        }
-      } else if (filterValues.filter2By === "Is not equal to") {
-        if (filterValues.compareValue === "And") {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              !row[column]
-                .toLowerCase()
-                .includes(filterValues.filter1Value.toLowerCase()) &&
-              (filterValues.filter2Value
-                ? row[column].toLowerCase() !==
-                  filterValues.filter2Value.toLowerCase()
-                : true)
-          );
-        } else {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              !row[column]
-                .toLowerCase()
-                .includes(filterValues.filter1Value.toLowerCase()) ||
-              (filterValues.filter2Value
-                ? row[column].toLowerCase() !==
-                  filterValues.filter2Value.toLowerCase()
-                : false)
-          );
-        }
-      } else if (filterValues.filter2By === "Starts with") {
-        if (filterValues.compareValue === "And") {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              !row[column]
-                .toLowerCase()
-                .includes(filterValues.filter1Value.toLowerCase()) &&
-              (filterValues.filter2Value
-                ? row[column]
-                    .toLowerCase()
-                    .startsWith(filterValues.filter2Value.toLowerCase())
-                : true)
-          );
-        } else {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              !row[column]
-                .toLowerCase()
-                .includes(filterValues.filter1Value.toLowerCase()) ||
-              (filterValues.filter2Value
-                ? row[column]
-                    .toLowerCase()
-                    .startsWith(filterValues.filter2Value.toLowerCase())
-                : false)
-          );
-        }
-      } else if (filterValues.filter2By === "Contains") {
-        if (filterValues.compareValue === "And") {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              !row[column]
-                .toLowerCase()
-                .includes(filterValues.filter1Value.toLowerCase()) &&
-              (filterValues.filter2Value
-                ? row[column]
-                    .toLowerCase()
-                    .includes(filterValues.filter2Value.toLowerCase())
-                : true)
-          );
-        } else {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              !row[column]
-                .toLowerCase()
-                .includes(filterValues.filter1Value.toLowerCase()) ||
-              (filterValues.filter2Value
-                ? row[column]
-                    .toLowerCase()
-                    .includes(filterValues.filter2Value.toLowerCase())
-                : false)
-          );
-        }
-      } else if (filterValues.filter2By === "Does not contain") {
-        if (filterValues.compareValue === "And") {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              !row[column]
-                .toLowerCase()
-                .includes(filterValues.filter1Value.toLowerCase()) &&
-              (filterValues.filter2Value
-                ? !row[column]
-                    .toLowerCase()
-                    .includes(filterValues.filter2Value.toLowerCase())
-                : true)
-          );
-        } else {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              !row[column]
-                .toLowerCase()
-                .includes(filterValues.filter1Value.toLowerCase()) ||
-              (filterValues.filter2Value
-                ? !row[column]
-                    .toLowerCase()
-                    .includes(filterValues.filter2Value.toLowerCase())
-                : false)
-          );
-        }
-      } else if (filterValues.filter2By === "Ends with") {
-        if (filterValues.compareValue === "And") {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              !row[column]
-                .toLowerCase()
-                .includes(filterValues.filter1Value.toLowerCase()) &&
-              (filterValues.filter2Value
-                ? row[column]
-                    .toLowerCase()
-                    .endsWith(filterValues.filter2Value.toLowerCase())
-                : true)
-          );
-        } else {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              !row[column]
-                .toLowerCase()
-                .includes(filterValues.filter1Value.toLowerCase()) ||
-              (filterValues.filter2Value
-                ? row[column]
-                    .toLowerCase()
-                    .endsWith(filterValues.filter2Value.toLowerCase())
-                : false)
-          );
-        }
-      }
-      break;
-    case "Ends with":
-      if (filterValues.filter2By === "Is equal to") {
-        if (filterValues.compareValue === "And") {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column]
-                .toLowerCase()
-                .endsWith(filterValues.filter1Value.toLowerCase()) &&
-              (filterValues.filter2Value
-                ? row[column].toLowerCase() ===
-                  filterValues.filter2Value.toLowerCase()
-                : true)
-          );
-        } else {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column]
-                .toLowerCase()
-                .endsWith(filterValues.filter1Value.toLowerCase()) ||
-              (filterValues.filter2Value
-                ? row[column].toLowerCase() ===
-                  filterValues.filter2Value.toLowerCase()
-                : false)
-          );
-        }
-      } else if (filterValues.filter2By === "Is not equal to") {
-        if (filterValues.compareValue === "And") {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column]
-                .toLowerCase()
-                .endsWith(filterValues.filter1Value.toLowerCase()) &&
-              (filterValues.filter2Value
-                ? row[column].toLowerCase() !==
-                  filterValues.filter2Value.toLowerCase()
-                : true)
-          );
-        } else {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column]
-                .toLowerCase()
-                .endsWith(filterValues.filter1Value.toLowerCase()) ||
-              (filterValues.filter2Value
-                ? row[column].toLowerCase() !==
-                  filterValues.filter2Value.toLowerCase()
-                : false)
-          );
-        }
-      } else if (filterValues.filter2By === "Starts with") {
-        if (filterValues.compareValue === "And") {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column]
-                .toLowerCase()
-                .endsWith(filterValues.filter1Value.toLowerCase()) &&
-              (filterValues.filter2Value
-                ? row[column]
-                    .toLowerCase()
-                    .startsWith(filterValues.filter2Value.toLowerCase())
-                : true)
-          );
-        } else {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column]
-                .toLowerCase()
-                .endsWith(filterValues.filter1Value.toLowerCase()) ||
-              (filterValues.filter2Value
-                ? row[column]
-                    .toLowerCase()
-                    .startsWith(filterValues.filter2Value.toLowerCase())
-                : false)
-          );
-        }
-      } else if (filterValues.filter2By === "Contains") {
-        if (filterValues.compareValue === "And") {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column]
-                .toLowerCase()
-                .endsWith(filterValues.filter1Value.toLowerCase()) &&
-              (filterValues.filter2Value
-                ? row[column]
-                    .toLowerCase()
-                    .includes(filterValues.filter2Value.toLowerCase())
-                : true)
-          );
-        } else {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column]
-                .toLowerCase()
-                .endsWith(filterValues.filter1Value.toLowerCase()) ||
-              (filterValues.filter2Value
-                ? row[column]
-                    .toLowerCase()
-                    .includes(filterValues.filter2Value.toLowerCase())
-                : false)
-          );
-        }
-      } else if (filterValues.filter2By === "Does not contain") {
-        if (filterValues.compareValue === "And") {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column]
-                .toLowerCase()
-                .endsWith(filterValues.filter1Value.toLowerCase()) &&
-              (filterValues.filter2Value
-                ? !row[column]
-                    .toLowerCase()
-                    .includes(filterValues.filter2Value.toLowerCase())
-                : true)
-          );
-        } else {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column]
-                .toLowerCase()
-                .endsWith(filterValues.filter1Value.toLowerCase()) ||
-              (filterValues.filter2Value
-                ? !row[column]
-                    .toLowerCase()
-                    .includes(filterValues.filter2Value.toLowerCase())
-                : false)
-          );
-        }
-      } else if (filterValues.filter2By === "Ends with") {
-        if (filterValues.compareValue === "And") {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column]
-                .toLowerCase()
-                .endsWith(filterValues.filter1Value.toLowerCase()) &&
-              (filterValues.filter2Value
-                ? row[column]
-                    .toLowerCase()
-                    .endsWith(filterValues.filter2Value.toLowerCase())
-                : true)
-          );
-        } else {
-          rowsToFilter = rowsToFilter.filter(
-            row =>
-              row[column]
-                .toLowerCase()
-                .endsWith(filterValues.filter1Value.toLowerCase()) ||
-              (filterValues.filter2Value
-                ? row[column]
-                    .toLowerCase()
-                    .endsWith(filterValues.filter2Value.toLowerCase())
-                : false)
-          );
-        }
-      }
-      break;
-    default:
-      break;
-  }
-  return rowsToFilter;
+    };
+    return b[x](row);
+  };
+
+  return rowsToFilter.filter(row =>
+     op(
+      b1(filterValues.filter1By, row),
+      filterValues.compareValue,
+      b2(filterValues.filter2By, row,filterValues.compareValue)
+    )
+  );
 };
 
-
-module.exports=
-  filterRows;
+module.exports = filterRows;

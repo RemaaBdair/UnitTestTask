@@ -37,15 +37,13 @@ const filterRows = (rows: Column[],filterValues: FilterFormValues): Column[] => 
     op: string
   ): boolean => {
     let values = {
-      "Is equal to": function(row) {
+      "Is equal to": function() {
         return filterValues.filter2Value
           ? propf(prop, row).toLowerCase() ===
               filterValues.filter2Value.toLowerCase()
-          : op === "And"
-          ? true
-          : false;
+          : op === "And"? true : false;
       },
-      "Is not equal to": function(row) {
+      "Is not equal to": function() {
         return filterValues.filter2Value
           ? propf(prop, row).toLowerCase() !==
               filterValues.filter2Value.toLowerCase()
@@ -53,7 +51,7 @@ const filterRows = (rows: Column[],filterValues: FilterFormValues): Column[] => 
           ? true
           : false;
       },
-      "Starts with": function(row) {
+      "Starts with": function() {
         return filterValues.filter2Value
           ? propf(prop, row)
               .toLowerCase()
@@ -62,7 +60,7 @@ const filterRows = (rows: Column[],filterValues: FilterFormValues): Column[] => 
           ? true
           : false;
       },
-      Contains: function(row) {
+      'Contains': function() {
         return filterValues.filter2Value
           ? propf(prop, row)
               .toLowerCase()
@@ -71,7 +69,7 @@ const filterRows = (rows: Column[],filterValues: FilterFormValues): Column[] => 
           ? true
           : false;
       },
-      "Does not contain": function(row) {
+      "Does not contain": function() {
         return filterValues.filter2Value
           ? !propf(prop, row)
               .toLowerCase()
@@ -80,7 +78,7 @@ const filterRows = (rows: Column[],filterValues: FilterFormValues): Column[] => 
           ? true
           : false;
       },
-      "Ends with": function(row) {
+      "Ends with": function() {
         return filterValues.filter2Value
           ? propf(prop, row)
               .toLowerCase()
@@ -90,45 +88,45 @@ const filterRows = (rows: Column[],filterValues: FilterFormValues): Column[] => 
           : false;
       }
     };
-    return values[filterBy](row);
+    return values[filterBy]();
   };
 
   const operand1 = (filterBy: FilterOptions, row: Column): boolean => {
     let values = {
-      "Is equal to": function(row) {
+      "Is equal to": function() {
         return (
           propf(prop, row).toLowerCase() ===
           filterValues.filter1Value.toLowerCase()
         );
       },
-      "Is not equal to": function(row) {
+      "Is not equal to": function() {
         return (
           propf(prop, row).toLowerCase() !==
           filterValues.filter1Value.toLowerCase()
         );
       },
-      "Starts with": function(row) {
+      "Starts with": function() {
         return propf(prop, row)
           .toLowerCase()
           .startsWith(filterValues.filter1Value.toLowerCase());
       },
-      Contains: function(row) {
+      'Contains': function() {
         return propf(prop, row)
           .toLowerCase()
           .includes(filterValues.filter1Value.toLowerCase());
       },
-      "Does not contain": function(row) {
+      "Does not contain": function() {
         return !propf(prop, row)
           .toLowerCase()
           .includes(filterValues.filter1Value.toLowerCase());
       },
-      "Ends with": function(row) {
+      "Ends with": function() {
         return propf(prop, row)
           .toLowerCase()
           .endsWith(filterValues.filter1Value.toLowerCase());
       }
     };
-    return values[filterBy](row);
+    return values[filterBy]();
   };
 
   return rowsToFilter.filter(row =>

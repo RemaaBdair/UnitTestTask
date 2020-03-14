@@ -960,6 +960,25 @@ describe("filter", () => {
       };
     expect(filterRowss([col1,col2], fv)).toStrictEqual([col1,col2]);
   });
+  test("when filter by nested cols", () => {
+ col1.name={
+      firstName:'Ahmad',
+      secondName:'Mohammad'
+    }
+ col2.name= {
+      firstName:'Remaa',
+      secondName:'Mohammad'
+    }
+  let fv: FilterFormValues = {
+    filter1By: "Is equal to",
+    filter1Value: "Mohammad",
+    filter2By: "Is equal to",
+    filter2Value: undefined,
+    compareValue: "And",
+    column:(elem)=>{if( typeof elem.name !=='string') return elem.name.secondName}
+    };
+  expect(filterRowss([col1,col2], fv)).toStrictEqual([col1,col2]);
+});
 });
 
 

@@ -96,7 +96,10 @@ function filterRows<T>(
           : false;
       }
     };
+    if(typeof propf(prop, row) ==='string')
     return values[filterBy]();
+    else
+    return false
   };
 
   return rowsToFilter.filter(row =>

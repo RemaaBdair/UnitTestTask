@@ -1,10 +1,10 @@
 let filterRowss = require("../filter.ts");
-const col1: Column = {
+const col1: Column <{}>= {
   id: "red",
   category: "cat1",
   name: "col1"
 };
-const col2: Column = {
+const col2: Column <{}>= {
   id: "blue",
   category: "cat1",
   name: "col2"
@@ -37,7 +37,7 @@ describe("filter", () => {
   });
 
   test("should expect [] when filter1By= is equal to and filter2by= is equal to and compareValue is And with different filterValues", () => {
-    let fv: FilterFormValues = {
+    let fv: FilterFormValues  = {
       filter1By: "Is equal to",
       filter1Value: "red",
       filter2By: "Is equal to",
@@ -48,7 +48,7 @@ describe("filter", () => {
     expect(filterRowss([col1, col2], fv)).toStrictEqual([]);
   });
   test("when filter1By= is equal to and filter2by= is equal to and compareValue is And with no filter2Value", () => {
-    let fv: FilterFormValues = {
+    let fv: FilterFormValues  = {
       filter1By: "Is equal to",
       filter1Value: "red",
       filter2By: "Is equal to",
@@ -59,7 +59,7 @@ describe("filter", () => {
     expect(filterRowss([col1, col2], fv)).toStrictEqual([col1]);
   });/** */
   test("when filter1By= is equal to and filter2by= is equal to and compareValue is Or with no filter2Value", () => {
-    let fv: FilterFormValues = {
+    let fv: FilterFormValues  = {
       filter1By: "Is equal to",
       filter1Value: "red",
       filter2By: "Is equal to",
@@ -71,7 +71,7 @@ describe("filter", () => {
   });/**+1 */
 
   test("should expect [] when filter1By= is equal to and filter2by= is not equal to and compareValue is And with same filterValues", () => {
-    let fv: FilterFormValues = {
+    let fv: FilterFormValues  = {
       filter1By: "Is equal to",
       filter1Value: "red",
       filter2By: "Is not equal to",
@@ -82,7 +82,7 @@ describe("filter", () => {
     expect(filterRowss([col1, col2], fv)).toStrictEqual([]);
   });
   test("when filter1By= Is not equal to and filter2by= is not equal to and compareValue is And with no filter2Value", () => {
-    let fv: FilterFormValues = {
+    let fv: FilterFormValues  = {
       filter1By: "Is not equal to",
       filter1Value: "red",
       filter2By: "Is not equal to",
@@ -93,7 +93,7 @@ describe("filter", () => {
     expect(filterRowss([col1, col2], fv)).toStrictEqual([col2]);
   });/** */
   test("when filter1By= Is not equal to and filter2by= is not equal to and compareValue is Or with no filter2Value", () => {
-  let fv: FilterFormValues = {
+  let fv: FilterFormValues  = {
     filter1By: "Is not equal to",
     filter1Value: "red",
     filter2By: "Is not equal to",
@@ -105,7 +105,7 @@ describe("filter", () => {
 });/** 1*/
 
 test("when filter1By= Starts with and filter2by= Starts with and compareValue is And", () => {
-  let fv: FilterFormValues = {
+  let fv: FilterFormValues  = {
     filter1By: "Starts with",
     filter1Value: "r",
     filter2By: "Starts with",
@@ -139,7 +139,7 @@ test("when filter1By= Starts with and filter2by= Starts with and compareValue is
 });/**+1 */
 
 test("when filter1By=Contains and filter2by= Contains and compareValue is And", () => {
-  let fv: FilterFormValues = {
+  let fv: FilterFormValues  = {
     filter1By: "Contains",
     filter1Value: "r",
     filter2By: "Contains",
@@ -150,7 +150,7 @@ test("when filter1By=Contains and filter2by= Contains and compareValue is And", 
   expect(filterRowss([col1,col2], fv)).toStrictEqual([]);
 });
 test("when filter1By= Contains and filter2by= Contains and compareValue is And with no filter2Value", () => {
-  let fv: FilterFormValues = {
+  let fv: FilterFormValues  = {
     filter1By: "Contains",
     filter1Value: "r",
     filter2By: "Contains",
@@ -161,7 +161,7 @@ test("when filter1By= Contains and filter2by= Contains and compareValue is And w
   expect(filterRowss([col1, col2], fv)).toStrictEqual([col1]);
 });/** */
 test("when filter1By= Contains and filter2by= Contains and compareValue is Or with no filter2Value", () => {
-  let fv: FilterFormValues = {
+  let fv: FilterFormValues  = {
     filter1By: "Contains",
     filter1Value: "r",
     filter2By: "Contains",
@@ -173,7 +173,7 @@ test("when filter1By= Contains and filter2by= Contains and compareValue is Or wi
 });/**+1 */
 
 test("filter1By= Does not contain and filter2by= Does not contain and compareValue is And", () => {
-  let fv: FilterFormValues = {
+  let fv: FilterFormValues  = {
     filter1By: "Does not contain",
     filter1Value: "l",
     filter2By: "Does not contain",
@@ -184,7 +184,7 @@ test("filter1By= Does not contain and filter2by= Does not contain and compareVal
   expect(filterRowss([col1,col2], fv)).toStrictEqual([]);
 });
 test("when filter1By= Does not contain and filter2by= Does not contain and compareValue is And with no filter2Value", () => {
-  let fv: FilterFormValues = {
+  let fv: FilterFormValues  = {
     filter1By: "Does not contain",
     filter1Value: "l",
     filter2By: "Does not contain",
@@ -195,7 +195,7 @@ test("when filter1By= Does not contain and filter2by= Does not contain and compa
   expect(filterRowss([col1, col2], fv)).toStrictEqual([col1]);
 });/** */
 test("when filter1By= Does not contain and filter2by= Does not contain and compareValue is Or with no filter2Value", () => {
-  let fv: FilterFormValues = {
+  let fv: FilterFormValues  = {
     filter1By: "Does not contain",
     filter1Value: "r",
     filter2By: "Does not contain",
@@ -208,7 +208,7 @@ test("when filter1By= Does not contain and filter2by= Does not contain and compa
 
 
 test("when filter1By= Ends with and filter2by= Ends with and compareValue is And", () => {
-  let fv: FilterFormValues = {
+  let fv: FilterFormValues  = {
     filter1By: "Ends with",
     filter1Value: "e",
     filter2By: "Ends with",
@@ -219,7 +219,7 @@ test("when filter1By= Ends with and filter2by= Ends with and compareValue is And
   expect(filterRowss([col1,col2], fv)).toStrictEqual([]);
 });
 test("when filter1By= Ends with and filter2by= Ends with and compareValue is And with no filter2Value", () => {
-  let fv: FilterFormValues = {
+  let fv: FilterFormValues  = {
     filter1By: "Ends with",
     filter1Value: "d",
     filter2By: "Ends with",
@@ -230,7 +230,7 @@ test("when filter1By= Ends with and filter2by= Ends with and compareValue is And
   expect(filterRowss([col1, col2], fv)).toStrictEqual([col1]);
 });/** */
 test("when filter1By= Ends with and filter2by= Ends with and compareValue is Or with no filter2Value", () => {
-  let fv: FilterFormValues = {
+  let fv: FilterFormValues  = {
     filter1By: "Ends with",
     filter1Value: "e",
     filter2By: "Ends with",
@@ -244,19 +244,23 @@ test("when filter1By= Ends with and filter2by= Ends with and compareValue is Or 
   test("when filter by nested cols", () => {
  col1.name={
       firstName:'Ahmad',
-      secondName:'Mohammad'
+      secondName:{
+        MidName:'MM'
+      }
     }
  col2.name= {
       firstName:'Remaa',
-      secondName:'Mohammad'
+      secondName:{
+        MidName:'MM'
+      }
     }
-  let fv: FilterFormValues = {
+  let fv: FilterFormValues= {
     filter1By: "Is equal to",
-    filter1Value: "Mohammad",
+    filter1Value: "MM",
     filter2By: "Is equal to",
     filter2Value: undefined,
     compareValue: "And",
-    column:(elem)=>{if( typeof elem.name !=='string') return elem.name.secondName}
+    column:(elem)=>{if( typeof elem.name !=='string') return elem.name.secondName.MidName}
     };
   expect(filterRowss([col1,col2], fv)).toStrictEqual([col1,col2]);
 });

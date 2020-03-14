@@ -241,17 +241,18 @@ test("when filter1By= Ends with and filter2by= Ends with and compareValue is Or 
   expect(filterRowss([col1, col2], fv)).toStrictEqual([col2]);
 });/**+1 */
 
-  test("when filter by nested cols", () => {
- col1.name={
-      firstName:'Ahmad',
-      secondName:{
-        MidName:'MM'
-      }
-    }
+test("when filter by nested cols", () => {
+ col1.name='Ahmad';
  col2.name= {
       firstName:'Remaa',
-      secondName:{
-        MidName:'MM'
+      secondName:'MM'
+    }
+    let col3:Column<{}>={
+      id:'red',
+      category:'cat1',
+      name:{
+        firstName:'Sajeda',
+        secondName:'MM'
       }
     }
   let fv: FilterFormValues= {
@@ -260,9 +261,9 @@ test("when filter1By= Ends with and filter2by= Ends with and compareValue is Or 
     filter2By: "Is equal to",
     filter2Value: undefined,
     compareValue: "And",
-    column:(elem)=>{if( typeof elem.name !=='string') return elem.name.secondName.MidName}
+    column:((elem)=> elem.name.secondName)
     };
-  expect(filterRowss([col1,col2], fv)).toStrictEqual([col1,col2]);
+  expect(filterRowss([col1,col2,col3], fv)).toStrictEqual([col2,col3]);
 });
 });
 
